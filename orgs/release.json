@@ -16,5 +16,14 @@
       "sessionSettings": {
         "forceRelogin": false
       }
-    }  }
+    }
+  },
+  "objectSettings": {
+    "account": {
+      "defaultRecordType": "default"
+    },
+    "opportunity": {
+      "defaultRecordType": "donation"
+    }
+  }
 }

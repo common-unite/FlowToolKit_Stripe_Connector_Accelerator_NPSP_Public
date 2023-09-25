@@ -18,7 +18,12 @@ tasks:
             branch: "main"
             create_release: true
             release_body: true
-            include: [ "cumulusci.yml","sfdx-project.json","orgs/","README.md" ]
+            include: [ "cumulusci.yml","sfdx-project.json","orgs/","unpackaged/","README.md" ]
+
+    deploy_post:
+            options:
+                path: "force-app-post"
+                namespace-inject: true
 
     robot:
         options:
@@ -39,6 +44,14 @@ flows:
 
     release_2gp_beta:
         steps:
+
+            80:
+                task: dx_convert_from
+                options:
+                    src_dir: unpackaged/post
+                    extra:
+                        -r force-app-post
+
             90:
                 task: github_copy_subtree
                 options:
@@ -63,10 +76,7 @@ flows:
                 task: deploy_unpackaged_post
                 options:
                     unmanaged: true
-            3:
-                task: assign_permission_sets
-                options:
-                    api_names: cUnite_Form_Flow_V4S_Admin,Form_Builder_Admin,cUnite_Form_Flow_V4S_User,Form_Flow_User
+
 orgs:
     scratch:
         dev:
