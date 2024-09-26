@@ -1,53 +1,62 @@
 minimum_cumulusci_version: '3.79.0'
 project:
-    name: cUnite_Stripe_Connector_Accelerator
+    name: cUnite_Stripe_Connector_Accelerator_NPSP
     package:
-        name: "Flow Tool Kit: Stripe Connector Accelerator"
+        name: "Flow Tool Kit: Stripe Connector Accelerator (NPSP)"
         namespace: FlowToolKit
         api_version: '55.0'
     dependencies:
         - github: 'https://github.com/common-unite/Flow_Tool_Kit_Public'
-        - version_id: 04tRN0000000CPNYA2
-        - version_id: 04t4x0000003MzaAAE
+        - github: 'https://github.com/common-unite/FlowToolKit_Stripe_Connector_Accelerator_Public'
+        - github: 'https://github.com/SalesforceFoundation/NPSP/'
+          tag: rel/3.229
+    dependency_pins:
+        - github: 'https://github.com/SalesforceFoundation/NPSP'
+          tag: rel/3.228
     git:
     source_format: sfdx
 
 tasks:
-
     github_copy_subtree:
         options:
-            repo_url: "https://github.com/common-unite/FlowToolKit_Stripe_Connector_Accelerator_Public"
+            repo_url: "https://github.com/common-unite/FlowToolKit_Stripe_Connector_Accelerator_NPSP_Public"
             branch: "main"
             create_release: true
             release_body: true
-            include: [ "cumulusci.yml","sfdx-project.json","orgs/","README.md" ]
+            include: [ "cumulusci.yml","sfdx-project.json","orgs/","unpackaged/","README.md" ]
+
+    deploy_post:
+            options:
+                path: "force-app-post"
+                namespace-inject: true
 
     robot:
         options:
-            suites: robot/cUnite_Stripe_Connector_Accelerator/tests
+            suites: robot/cUnite_Stripe_Connector_Accelerator_NPSP/tests
             options:
-                outputdir: robot/cUnite_Stripe_Connector_Accelerator/results
+                outputdir: robot/cUnite_Stripe_Connector_Accelerator_NPSP/results
 
     robot_testdoc:
         options:
-            path: robot/cUnite_Stripe_Connector_Accelerator/tests
-            output: robot/cUnite_Stripe_Connector_Accelerator/doc/cUnite_Stripe_Connector_Accelerator_tests.html
+            path: robot/cUnite_Stripe_Connector_Accelerator_NPSP/tests
+            output: robot/cUnite_Stripe_Connector_Accelerator_NPSP/doc/cUnite_Stripe_Connector_Accelerator_NPSP_tests.html
 
     run_tests:
         options:
             required_org_code_coverage_percent: 75
 
-    scan_csv:
-        description: Scan a CSV file for a specific value
-        class_path: tasks.ScanCSVTask.ScanCSVTask
-        options:
-            csv_file_path: myFile.csv
-            value_to_scan: Book
-
 flows:
 
     release_2gp_beta:
         steps:
+
+            80:
+                task: dx_convert_from
+                options:
+                    src_dir: unpackaged/post
+                    extra:
+                        -r force-app-post
+
             90:
                 task: github_copy_subtree
                 options:
@@ -61,18 +70,21 @@ flows:
                 options:
                     tag_name: "latest"
 
-    testing:
+    deploy_unlocked_metadata:
         steps:
             1:
-                task: scan_csv
-            2:
-                task: log
+                task: dx_convert_from
                 options:
-                    line: $org_config.found
+                    src_dir: unpackaged/post
+                    extra: -r force-app-post
+            2:
+                task: deploy_unpackaged_post
+                options:
+                    unmanaged: true
 
 orgs:
     scratch:
         dev:
             config_file: orgs/dev.json
             days: 30
-            namespaced: True
+            namespaced: False

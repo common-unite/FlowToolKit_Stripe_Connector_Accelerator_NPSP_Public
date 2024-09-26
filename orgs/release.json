@@ -1,5 +1,5 @@
 {
-  "orgName": "Flow Tool Kit: Stripe Connector Accelerator - Release Test Org",
+  "orgName": "Flow Tool Kit: Stripe Connector Accelerator (NPSP) - Release Test Org",
   "edition": "Enterprise",
   "settings": {
     "lightningExperienceSettings": {
@@ -16,5 +16,14 @@
       "sessionSettings": {
         "forceRelogin": false
       }
-    }  }
+    }
+  },
+  "objectSettings": {
+    "account": {
+      "defaultRecordType": "default"
+    },
+    "opportunity": {
+      "defaultRecordType": "donation"
+    }
+  }
 }
